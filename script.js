@@ -42,7 +42,7 @@ const macroBackgroundImage =
 
 macroBackgroundImage.src =
 
-    "assets/macro-bg.png";
+    "macro-bg.png";
 
 /* =========================================================
 
