@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Protein – KHTN 9</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<h1 class="main-title">Protein - KHTN 9</h1>
+<body>
+
+    <main class="simulation">
+
+
+        <!-- =========================
+             MỨC VĨ MÔ
+        ========================== -->
+
+        <section class="panel">
+
+            <div class="panel-title">
+                MỨC VĨ MÔ
+            </div>
+
+
+            <div class="macro-stage">
+
+                <canvas
+                    id="macroCanvas"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             MỨC VI MÔ
+        ========================== -->
+
+        <section class="panel">
+
+            <div class="panel-title">
+                MỨC VI MÔ
+            </div>
+
+
+            <div class="micro-stage">
+
+                <canvas
+                    id="microCanvas"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =========================
+         ĐIỀU KHIỂN
+    ========================== -->
+
+    <div class="controls">
+
+        <div class="temperature-control">
+
+            <span>0°C</span>
+            <input
+                type="range"
+                id="temperature"
+                min="0"
+                max="100"
+                value="0"
+            >
+
+            <span>100°C</span>
+
+        </div>
+
+
+        <button id="reset">
+            LÀM LẠI
+        </button>
+
+    </div>
+
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
