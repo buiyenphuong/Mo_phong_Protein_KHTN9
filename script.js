@@ -42,7 +42,7 @@ const macroBackgroundImage =
 
 macroBackgroundImage.src =
 
-    "macro-bg.png";
+    "https://buiyenphuong.github.io/Mo_phong_Protein_KHTN9/macro-bg.png";
 
 /* =========================================================
 
