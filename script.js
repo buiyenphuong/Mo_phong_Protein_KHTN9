@@ -400,7 +400,7 @@ function drawBackground() {
 
         macroCtx.globalAlpha =
 
-            0.28;
+            0.70;
 
         macroCtx.drawImage(
 
