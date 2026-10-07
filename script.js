@@ -42,7 +42,7 @@ const macroBackgroundImage =
 
 macroBackgroundImage.src =
 
-    "macro-bg.png";
+    "assets/macro-bg.png";
 
 /* =========================================================
 
@@ -513,34 +513,6 @@ function drawTestTube() {
         top +
 
         tubeHeight;
-
-    /* bóng dưới ống nghiệm */
-
-    macroCtx.fillStyle =
-
-        "rgba(50,70,63,0.12)";
-
-    macroCtx.beginPath();
-
-    macroCtx.ellipse(
-
-        centerX,
-
-        bottom + 8,
-
-        tubeWidth * 0.62,
-
-        9,
-
-        0,
-
-        0,
-
-        Math.PI * 2
-
-    );
-
-    macroCtx.fill();
 
     /* =====================================================
 
@@ -1037,68 +1009,54 @@ function drawTestTube() {
     macroCtx.stroke();
 
     /* =====================================================
+   MIỆNG ỐNG NGHIỆM
+   Chỉ chỉnh phần miệng ống, không thay đổi thân ống.
+===================================================== */
 
-       MIỆNG ỐNG NGHIỆM
+macroCtx.save();
 
-    ===================================================== */
+/* Phần trong miệng ống được tô kín để che đường ngang phía dưới */
 
-    macroCtx.fillStyle =
+macroCtx.fillStyle =
+    "rgba(245,252,249,0.96)";
 
-        "rgba(245,252,249,0.72)";
+macroCtx.beginPath();
 
-    macroCtx.beginPath();
+macroCtx.ellipse(
+    centerX,
+    top,
+    tubeWidth / 2,
+    6,
+    0,
+    0,
+    Math.PI * 2
+);
 
-    macroCtx.ellipse(
+macroCtx.fill();
 
-        centerX,
+/* Viền miệng ống */
 
-        top,
+macroCtx.strokeStyle =
+    "rgba(75,112,101,0.68)";
 
-        tubeWidth / 2,
+macroCtx.lineWidth =
+    2;
 
-        6,
+macroCtx.beginPath();
 
-        0,
+macroCtx.ellipse(
+    centerX,
+    top,
+    tubeWidth / 2,
+    6,
+    0,
+    0,
+    Math.PI * 2
+);
 
-        0,
+macroCtx.stroke();
 
-        Math.PI * 2
-
-    );
-
-    macroCtx.fill();
-
-    macroCtx.stroke();
-
-    /* ánh sáng trên thành ống */
-
-    macroCtx.strokeStyle =
-
-        "rgba(255,255,255,0.82)";
-
-    macroCtx.lineWidth =
-
-        3;
-
-    macroCtx.beginPath();
-
-    macroCtx.moveTo(
-
-        left + 9,
-
-        top + 18
-
-    );
-
-    macroCtx.lineTo(
-
-        left + 9,
-
-        bottom - 28
-
-    );
-
-    macroCtx.stroke();
+macroCtx.restore();
 
 }
 
@@ -1453,275 +1411,310 @@ function drawInternalBubbles(
 }
 
 /* =========================================================
+   HƠI TRẮNG BỐC LÊN KHI LÒNG TRẮNG ĐƯỢC ĐUN NÓNG
+   Chỉ xuất hiện khi đã có lòng trắng và nhiệt độ đủ cao.
+========================================================= */
 
+function drawSteam() {
+
+    if (
+        eggWhiteAmount <= 0 ||
+        temperature < 70
+    ) {
+        return;
+    }
+
+    const centerX =
+        macroW * 0.50;
+
+    const tubeTop =
+        macroH * 0.25;
+
+    /* Mức độ hơi tăng dần khi nhiệt độ tăng */
+    const heat =
+        Math.max(
+            0,
+            Math.min(
+                (temperature - 70) / 30,
+                1
+            )
+        );
+
+    const steamCount =
+        8 + Math.floor(heat * 5);
+
+    for (
+        let i = 0;
+        i < steamCount;
+        i++
+    ) {
+
+        const phase =
+            i * 1.73;
+
+        /* Hơi dao động nhẹ sang trái/phải */
+        const x =
+            centerX +
+            Math.sin(
+                time * 1.8 +
+                phase
+            ) *
+            (
+                5 +
+                heat * 8
+            ) +
+            ((i % 3) - 1) * 5;
+
+        /* Hơi đi từ miệng ống lên trên */
+        const rise =
+            (
+                time *
+                (18 + heat * 12) +
+                i * 19
+            ) %
+            70;
+
+        const y =
+            tubeTop -
+            5 -
+            rise;
+
+        /* Hạt hơi càng lên cao càng nhỏ và mờ */
+        const progress =
+            rise / 70;
+
+        const radius =
+            3.5 +
+            (1 - progress) * 4.5;
+
+        const alpha =
+            (
+                0.16 +
+                (1 - progress) * 0.24
+            ) *
+            heat;
+
+        macroCtx.fillStyle =
+            `rgba(255,255,255,${alpha})`;
+
+        macroCtx.beginPath();
+
+        macroCtx.arc(
+            x,
+            y,
+            radius,
+            0,
+            Math.PI * 2
+        );
+
+        macroCtx.fill();
+
+        /* Lớp viền rất nhẹ để hơi nhìn mềm hơn */
+        macroCtx.strokeStyle =
+            `rgba(235,245,242,${alpha * 0.55})`;
+
+        macroCtx.lineWidth = 1;
+
+        macroCtx.stroke();
+    }
+}
+
+/* =========================================================
    GIÁ ĐỠ ỐNG NGHIỆM
-
 ========================================================= */
 
 function drawStand() {
 
     const standX =
-
         macroW * 0.17;
 
     const tubeCenterX =
-
         macroW * 0.50;
 
     const tubeWidth =
-
         macroW * 0.095;
 
+    /* Vị trí và chiều cao ống nghiệm */
+    const tubeTop =
+        macroH * 0.25;
+
+    const tubeHeight =
+        macroH * 0.42;
+
     const tubeLeft =
-
         tubeCenterX -
-
         tubeWidth / 2;
 
     const tubeRight =
-
         tubeCenterX +
-
         tubeWidth / 2;
 
     /* =====================================================
-
        ĐẾ GIÁ
-
     ===================================================== */
 
     const baseLeft =
-
         standX - 72;
 
     const baseRight =
-
         tubeCenterX + 72;
 
     const baseY =
-
         macroH * 0.825;
 
     const baseHeight =
-
         27;
 
     addShadow(
-
         macroCtx,
-
         8,
-
         0.16
-
     );
 
     const base =
-
         macroCtx.createLinearGradient(
-
             baseLeft,
-
             0,
-
             baseRight,
-
             0
-
         );
 
     base.addColorStop(
-
         0,
-
         "#354d46"
-
     );
 
     base.addColorStop(
-
         0.5,
-
         "#526a61"
-
     );
 
     base.addColorStop(
-
         1,
-
         "#354d46"
-
     );
 
     macroCtx.fillStyle =
-
         base;
 
     roundedRect(
-
         macroCtx,
-
         baseLeft,
-
         baseY,
-
         baseRight - baseLeft,
-
         baseHeight,
-
         7
-
     );
 
     macroCtx.fill();
 
     removeShadow(
-
         macroCtx
-
     );
 
     /* =====================================================
-
        TRỤ ĐỨNG
-
     ===================================================== */
 
     const pole =
-
         macroCtx.createLinearGradient(
-
             standX - 9,
-
             0,
-
             standX + 9,
-
             0
-
         );
 
     pole.addColorStop(
-
         0,
-
         "#61756d"
-
     );
 
     pole.addColorStop(
-
         0.48,
-
         "#a4b3ae"
-
     );
 
     pole.addColorStop(
-
         1,
-
         "#50645d"
-
     );
 
     macroCtx.fillStyle =
-
         pole;
 
     roundedRect(
-
         macroCtx,
-
         standX - 8,
-
         macroH * 0.14,
-
         16,
-
         baseY -
-
         macroH * 0.14,
-
         7
-
     );
 
     macroCtx.fill();
 
     /* =====================================================
+       KẸP ỐNG NGHIỆM Ở ĐÚNG 1/3 CHIỀU DÀI ỐNG
+    ===================================================== */
 
+    /*
+       Ống nghiệm bắt đầu ở tubeTop và dài tubeHeight.
+
+       Vị trí tâm của kẹp:
+       tubeTop + 1/3 * tubeHeight
+
+       => kẹp nằm đúng 1/3 tính từ miệng ống nghiệm xuống.
+    */
+
+    const clampY =
+        tubeTop +
+        tubeHeight / 3;
+
+    /* =====================================================
        THANH NGANG
-
     ===================================================== */
 
     const barStart =
-
         standX;
 
     const barEnd =
-
         tubeLeft - 10;
 
     macroCtx.fillStyle =
-
         "#64746e";
 
     roundedRect(
-
         macroCtx,
-
         barStart,
-
-        macroH * 0.275,
-
+        clampY - 7,
         barEnd - barStart,
-
         14,
-
         6
-
     );
 
     macroCtx.fill();
 
     /* =====================================================
-
        CỤM KẸP
-
     ===================================================== */
 
-    const clampY =
-
-        macroH * 0.282;
-
     const clampLeft =
-
         tubeLeft - 40;
 
     const clampWidth =
-
         tubeWidth + 72;
 
     macroCtx.fillStyle =
-
         "#525f5a";
 
     roundedRect(
-
         macroCtx,
-
         clampLeft,
-
         clampY - 20,
-
         clampWidth,
-
         40,
-
         8
-
     );
 
     macroCtx.fill();
@@ -1729,123 +1722,91 @@ function drawStand() {
     /* núm kẹp */
 
     macroCtx.fillStyle =
-
         "#3f4d48";
 
     roundedRect(
-
         macroCtx,
-
         clampLeft - 21,
-
         clampY - 10,
-
         22,
-
         20,
-
         4
-
     );
 
     macroCtx.fill();
 
-    /* ngàm trên */
+    /* =====================================================
+       NGÀM TRÊN
+    ===================================================== */
 
     macroCtx.strokeStyle =
-
         "#75837d";
 
     macroCtx.lineWidth =
-
         7;
 
     macroCtx.lineCap =
-
         "round";
 
     macroCtx.beginPath();
 
     macroCtx.moveTo(
-
         tubeLeft - 2,
-
         clampY - 2
-
     );
 
     macroCtx.lineTo(
-
         tubeLeft + 13,
-
         clampY - 11
-
     );
 
     macroCtx.lineTo(
-
         tubeRight + 2,
-
         clampY - 11
-
     );
 
     macroCtx.stroke();
 
-    /* ngàm dưới */
+    /* =====================================================
+       NGÀM DƯỚI
+    ===================================================== */
 
     macroCtx.beginPath();
 
     macroCtx.moveTo(
-
         tubeLeft - 2,
-
         clampY + 2
-
     );
 
     macroCtx.lineTo(
-
         tubeLeft + 13,
-
         clampY + 11
-
     );
 
     macroCtx.lineTo(
-
         tubeRight + 2,
-
         clampY + 11
-
     );
 
     macroCtx.stroke();
 
-    /* đầu kẹp phủ lên thành ống */
+    /* =====================================================
+       ĐẦU KẸP PHỦ LÊN THÀNH ỐNG
+    ===================================================== */
 
     macroCtx.fillStyle =
-
         "#596862";
 
     roundedRect(
-
         macroCtx,
-
         tubeRight - 7,
-
         clampY - 15,
-
         18,
-
         30,
-
         5
-
     );
 
     macroCtx.fill();
-
 }
 
 /* =========================================================
@@ -2933,20 +2894,17 @@ function drawPipette() {
 function drawMacro() {
 
     macroCtx.clearRect(
-
         0,
-
         0,
-
         macroW,
-
         macroH
-
     );
 
     drawBackground();
 
     drawTestTube();
+
+    drawSteam();
 
     drawStand();
 
